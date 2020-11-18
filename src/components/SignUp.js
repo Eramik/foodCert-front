@@ -10,7 +10,7 @@ import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { createStyles, withStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 
 function Copyright() {
@@ -26,7 +26,7 @@ function Copyright() {
   );
 }
 
-const useStyles = makeStyles((theme) => ({
+const styles = (theme) => createStyles({
   paper: {
     marginTop: theme.spacing(8),
     display: 'flex',
@@ -44,10 +44,9 @@ const useStyles = makeStyles((theme) => ({
   submit: {
     margin: theme.spacing(3, 0, 2),
   },
-}));
+});
 
-export default function SignUp() {
-  const classes = useStyles();
+export default withStyles(styles)(function SignUp({ classes }) {
 
   return (
     <Container component="main" maxWidth="xs">
@@ -125,7 +124,7 @@ export default function SignUp() {
           </Button>
           <Grid container justify="flex-end">
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/signIn" variant="body2">
                 Already have an account? Sign in
               </Link>
             </Grid>
@@ -137,4 +136,4 @@ export default function SignUp() {
       </Box>
     </Container>
   );
-}
+});
