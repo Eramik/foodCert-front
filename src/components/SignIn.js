@@ -51,7 +51,6 @@ export default withStyles(styles)(function SignIn({ classes }) {
     e.preventDefault();
   }
 
-
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
