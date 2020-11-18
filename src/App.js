@@ -5,6 +5,7 @@ import {
   Route,
   Link
 } from "react-router-dom";
+import SignIn from './components/SignIn';
 
 export default function App() {
   return (
@@ -19,7 +20,7 @@ export default function App() {
               <Link to="/about">About</Link>
             </li>
             <li>
-              <Link to="/users">Users</Link>
+              <Link to="/users">Sign in</Link>
             </li>
           </ul>
         </nav>
@@ -31,7 +32,7 @@ export default function App() {
             <About />
           </Route>
           <Route path="/users">
-            <Users />
+            <SignIn />
           </Route>
           <Route path="/">
             <Home />

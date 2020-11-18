@@ -17,8 +17,8 @@ function Copyright() {
   return (
     <Typography variant="body2" color="textSecondary" align="center">
       {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
+      <Link color="inherit" href="/">
+        Food Cert
       </Link>{' '}
       {new Date().getFullYear()}
       {'.'}
@@ -47,6 +47,10 @@ const styles = (theme) => createStyles({
 });
 
 export default withStyles(styles)(function SignIn({ classes }) {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+  }
+
 
   return (
     <Container component="main" maxWidth="xs">
@@ -58,7 +62,7 @@ export default withStyles(styles)(function SignIn({ classes }) {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
+        <form className={classes.form} onSubmit={handleSubmit}>
           <TextField
             variant="outlined"
             margin="normal"
