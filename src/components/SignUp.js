@@ -12,6 +12,8 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, withStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
+import { signUp } from '../services/user';
+import { useState } from 'react';
 
 function Copyright() {
   return (
@@ -47,8 +49,24 @@ const styles = (theme) => createStyles({
 });
 
 export default withStyles(styles)(function SignUp({ classes }) {
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      setErrorMessage('');
+
+      const firstName = e.target[0].value;
+      const lastName = e.target[2].value;
+      const email = e.target[4].value;
+      const password = e.target[6].value;
+      
+      await signUp(firstName, lastName, email, password);
+
+    } catch (e) {
+      console.log(e);
+      setErrorMessage(e.response && e.response.data.error.toString());
+    }
   }
 
   return (
@@ -110,10 +128,9 @@ export default withStyles(styles)(function SignUp({ classes }) {
               />
             </Grid>
             <Grid item xs={12}>
-              <FormControlLabel
-                control={<Checkbox value="allowExtraEmails" color="primary" />}
-                label="I want to receive inspiration, marketing promotions and updates via email."
-              />
+              <Typography color="error">
+                {errorMessage}
+              </Typography>
             </Grid>
           </Grid>
           <Button

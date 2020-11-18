@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -12,6 +12,7 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import { createStyles, withStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
+import { signIn } from '../services/user';
 
 function Copyright() {
   return (
@@ -47,8 +48,22 @@ const styles = (theme) => createStyles({
 });
 
 export default withStyles(styles)(function SignIn({ classes }) {
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const [errorMessage, setErrorMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    try {
+      e.preventDefault();
+      setErrorMessage('');
+
+      const email = e.target[0].value;
+      const password = e.target[2].value;
+      
+      await signIn(email, password);
+
+    } catch (e) {
+      console.log(e);
+      setErrorMessage(e.response && e.response.data.error.toString());
+    }
   }
 
   return (
@@ -84,10 +99,6 @@ export default withStyles(styles)(function SignIn({ classes }) {
             id="password"
             autoComplete="current-password"
           />
-          <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          />
           <Button
             type="submit"
             fullWidth
@@ -98,10 +109,10 @@ export default withStyles(styles)(function SignIn({ classes }) {
             Sign In
           </Button>
           <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
+            <Grid item xs={12}>
+              <Typography color="error">
+                {errorMessage}
+              </Typography>
             </Grid>
             <Grid item>
               <Link href="/signUp" variant="body2">
