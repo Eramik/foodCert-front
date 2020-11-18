@@ -1,6 +1,4 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import {
@@ -9,21 +7,12 @@ import {
   Route,
   Redirect
 } from "react-router-dom";
-
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        Your Website
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
+import Dashboard from './components/Dashboard';
+import { useCookies } from 'react-cookie';
 
 export default function App() {
+  const [cookies] = useCookies(['auth_token']);
+
   return (
     <Router>
       <div>
@@ -34,6 +23,12 @@ export default function App() {
           </Route>
           <Route path="/signUp">
             <SignUp />
+          </Route>
+          <Route path="/dashboard">
+            {cookies.auth_token ? 
+              <Dashboard />
+              : <Redirect to="/signIn" />
+            }
           </Route>
         </Switch>
       </div>
