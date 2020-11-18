@@ -64,9 +64,10 @@ export default withStyles(styles)(function SignUp({ classes }) {
       const email = e.target[4].value;
       const password = e.target[6].value;
       
-      const token = await signUp(firstName, lastName, email, password);
+      const { authToken, user } = await signUp(firstName, lastName, email, password);
 
-      setCookie('auth_token', token);
+      setCookie('user', user);
+      setCookie('auth_token', authToken);
     } catch (e) {
       console.log(e);
       setErrorMessage(e.response && e.response.data.error.toString());

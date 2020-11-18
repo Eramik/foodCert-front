@@ -61,8 +61,10 @@ export default withStyles(styles)(function SignIn({ classes }) {
       const email = e.target[0].value;
       const password = e.target[2].value;
       
-      const token = await signIn(email, password);
-      setCookie('auth_token', token);
+      const { authToken, user } = await signIn(email, password);
+
+      setCookie('user', user);
+      setCookie('auth_token', authToken);
     } catch (e) {
       console.log(e);
       setErrorMessage(e.response && e.response.data.error.toString());

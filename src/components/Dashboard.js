@@ -116,6 +116,9 @@ const useStyles = makeStyles((theme) => ({
   fixedHeight: {
     height: 240,
   },
+  userFullName: {
+    paddingRight: theme.spacing(2)
+  }
 }));
 
 export default function Dashboard() {
@@ -132,6 +135,7 @@ export default function Dashboard() {
   };
 
   const logOut = () => {
+    removeCookie('user');
     removeCookie('auth_token');
   }
 
@@ -154,7 +158,10 @@ export default function Dashboard() {
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
             Dashboard
           </Typography>
-          <Button color="inherit" onClick={logOut}>
+          <Typography noWrap color="inherit" className={classes.userFullName}>
+            {cookies.user && cookies.user.firstName + " " + cookies.user.lastName}
+          </Typography>
+          <Button color="inherit" onClick={logOut} variant="outlined" >
             Log out
           </Button>
         </Toolbar>
