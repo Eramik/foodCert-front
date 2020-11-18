@@ -13,6 +13,7 @@
     "@material-ui/icons": "^4.9.1",
     "axios": "^0.21.0",
     "clsx": "latest",
+    "material-table": "^1.69.2",
     "prop-types": "^15.7.2",
     "react": "latest",
     "react-cookie": "^4.0.3",

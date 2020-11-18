@@ -8,6 +8,65 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Title from './Title';
 
+const TRANSPORTATION_COLUMNS = [
+  {
+    title: '_id',
+    field: '_id',
+    hidden: true,
+  },
+  {
+    title: 'ownerId',
+    field: 'owner._id',
+    hidden: true,
+  },
+  {
+    title: 'Ask owner',
+    field: 'askOwner.profile.name',
+  },
+  {
+    title: 'Ask body',
+    field: 'ask.body',
+  },
+  {
+    title: 'Ask tags',
+    field: 'tags',
+    render: p => (p.ask.tags ? p.ask.tags.join(', ') : ''),
+  },
+  {
+    title: 'Offer owner',
+    field: 'offerOwner.profile.name',
+  },
+  {
+    title: 'Offer body',
+    field: 'offer.body',
+  },
+  {
+    title: 'Offer tags',
+    field: 'tags',
+    render: p => (p.offer.tags ? p.offer.tags.join(', ') : ''),
+  },
+  {
+    title: 'Status',
+    field: 'approved',
+    render: p => p.approved ? 'Approved' : 'Denied'
+  },
+  {
+    title: 'Moderated by',
+    field: 'moderatedBy',
+    render: p => p.moderatedBy && (p.moderatedBy.user ? p.moderatedBy.user.profile.name : 
+                  p.moderatedBy.slackUser && p.moderatedBy.slackUser.name + ' (from Slack)')
+  },
+  {
+    title: 'Date',
+    field: 'updatedAt',
+    render: p =>
+      dayjs(p.updatedAt)
+        .locale('en')
+        .format('YYYY-MM-DD'),
+  },
+];
+
+
 // Generate Order Data
 function createData(id, date, name, shipTo, paymentMethod, amount) {
   return { id, date, name, shipTo, paymentMethod, amount };
@@ -33,9 +92,11 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Orders() {
   const classes = useStyles();
+  
+
   return (
     <React.Fragment>
-      <Title>Recent Orders</Title>
+      <Title>Recent Transportations</Title>
       <Table size="small">
         <TableHead>
           <TableRow>
@@ -43,7 +104,7 @@ export default function Orders() {
             <TableCell>Name</TableCell>
             <TableCell>Ship To</TableCell>
             <TableCell>Payment Method</TableCell>
-            <TableCell align="right">Sale Amount</TableCell>
+            <TableCell align="right">Score</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
