@@ -3,8 +3,6 @@ import Avatar from '@material-ui/core/Avatar';
 import Button from '@material-ui/core/Button';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import TextField from '@material-ui/core/TextField';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
 import Link from '@material-ui/core/Link';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
@@ -13,6 +11,10 @@ import Typography from '@material-ui/core/Typography';
 import { createStyles, withStyles } from '@material-ui/core';
 import Container from '@material-ui/core/Container';
 import { signIn } from '../services/user';
+import { useCookies } from 'react-cookie';
+import {
+  Redirect
+} from "react-router-dom";
 
 function Copyright() {
   return (
@@ -49,6 +51,7 @@ const styles = (theme) => createStyles({
 
 export default withStyles(styles)(function SignIn({ classes }) {
   const [errorMessage, setErrorMessage] = useState('');
+  const [cookies, setCookie] = useCookies(['auth_token']);
 
   const handleSubmit = async (e) => {
     try {
@@ -58,12 +61,16 @@ export default withStyles(styles)(function SignIn({ classes }) {
       const email = e.target[0].value;
       const password = e.target[2].value;
       
-      await signIn(email, password);
-
+      const token = await signIn(email, password);
+      setCookie('auth_token', token);
     } catch (e) {
       console.log(e);
       setErrorMessage(e.response && e.response.data.error.toString());
     }
+  }
+
+  if (cookies.auth_token) {
+    return <Redirect to="/dashboard" />
   }
 
   return (
