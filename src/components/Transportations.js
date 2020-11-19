@@ -89,12 +89,14 @@ export default function Transportations({ authToken }) {
           .format('lll'),
     },
     {
-      title: 'Min temp',
+      title: 'Min temp set',
       field: 'minimalAllowedTemperature',
+      render: (tp) => tp.minimalAllowedTemperature + '°C'
     },
     {
-      title: 'Max temp',
+      title: 'Max temp set',
       field: 'maximalAllowedTemperature',
+      render: (tp) => tp.maximalAllowedTemperature + '°C'
     },
     {
       title: 'Certificate status',
@@ -171,7 +173,8 @@ export default function Transportations({ authToken }) {
         columns={TRANSPORTATION_COLUMNS}
         data={transportationData}
         options={{
-          sorting: true
+          sorting: true,
+          pageSize: 10,
         }}
         detailPanel={(t) => {
           return (
@@ -179,7 +182,7 @@ export default function Transportations({ authToken }) {
               <MaterialTable
                 title="Temperature Profiles"
                 options={{
-                  sorting: true
+                  sorting: true,
                 }}
                 columns={TEMPERATURE_PROFILE_COLUMNS}
                 data={t.temperatureMaps.map(tmap => { tmap.min = t.minimalAllowedTemperature; return tmap; })
@@ -190,7 +193,8 @@ export default function Transportations({ authToken }) {
                       <MaterialTable 
                         title="Temperature Points"
                         options={{
-                          sorting: true
+                          sorting: true,
+                          pageSize: 10,
                         }}
                         columns={TEMPERATURE_POINT_COLUMNS}
                         data={tmap.points}
