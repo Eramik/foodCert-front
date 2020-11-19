@@ -1,12 +1,14 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { LinearProgress, Grid, Button } from '@material-ui/core';
+import { LinearProgress, Grid, Button, Typography } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import { useState, useEffect } from 'react';
-import { getAllTransportationsForUser } from '../services/data';
+import { getAllTransportationsForUser, generateTransportation } from '../services/data';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import config from '../config/config';
+import localizedFormat from 'dayjs/plugin/localizedFormat';
+dayjs.extend(localizedFormat)
 dayjs.extend(utc);
 
 const TEMPERATURE_PROFILE_COLUMNS = [
@@ -63,6 +65,9 @@ const TEMPERATURE_POINT_COLUMNS = [
 const useStyles = makeStyles((theme) => ({
   profiles: {
     padding: theme.spacing(2),
+  },
+  generateButton: {
+    marginLeft: theme.spacing(3)
   }
 }));
 
@@ -81,7 +86,7 @@ export default function Transportations({ authToken }) {
         dayjs(p.updatedAt)
           .local()
           .locale('en')
-          .toString(),
+          .format('lll'),
     },
     {
       title: 'Min temp',
@@ -140,13 +145,29 @@ export default function Transportations({ authToken }) {
       loadTransportationData();
     }
   });
+
+  const handleGenerate = async () => {
+    setLoadingTransportationData(true);
+    const { transportations } = await generateTransportation(authToken);
+    setTransportationData(transportations);
+    setLoadingTransportationData(false);
+  }
   
 
   return (
     <React.Fragment>
       {loadingTransportationData && <LinearProgress />}
       <MaterialTable 
-        title="Recent Transportations"
+        title={
+          <>
+            <Typography variant="h5">
+              {"Recent Transportations"}
+              <Button variant="outlined" color="primary" onClick={handleGenerate} className={classes.generateButton}>
+                Generate one more sample
+              </Button>
+            </Typography>
+          </>
+        }
         columns={TRANSPORTATION_COLUMNS}
         data={transportationData}
         options={{

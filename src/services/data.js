@@ -12,3 +12,9 @@ export const signUp = async (firstName, lastName, email, password) => {
   console.log("Data: ", res.data);
   return res.data;
 };
+
+export const generateTransportation = async (token) => {
+  const res = await axios.get(config.serverBaseURL + '/generateSample?authToken=' + token);
+  console.log("Data: ", res.data);
+  return res.data;
+};
