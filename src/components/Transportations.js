@@ -1,10 +1,12 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { LinearProgress } from '@material-ui/core';
+import { LinearProgress, Grid } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import { useState, useEffect } from 'react';
 import { getAllTransportationsForUser } from '../services/data';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+dayjs.extend(utc);
 
 const TRANSPORTATION_COLUMNS = [
   {
@@ -14,9 +16,10 @@ const TRANSPORTATION_COLUMNS = [
   },
   {
     title: 'Date',
-    field: 'createdAt',
+    field: 'transportationEndTime',
     render: p =>
       dayjs(p.updatedAt)
+        .local()
         .locale('en')
         .toString(),
   },
@@ -47,27 +50,60 @@ const TRANSPORTATION_COLUMNS = [
   },
 ];
 
-
-// Generate Order Data
-function createData(id, date, name, shipTo, paymentMethod, amount) {
-  return { id, date, name, shipTo, paymentMethod, amount };
-}
-
-const rows = [
-  createData(0, '16 Mar, 2019', 'Elvis Presley', 'Tupelo, MS', 'VISA ⠀•••• 3719', 312.44),
-  createData(1, '16 Mar, 2019', 'Paul McCartney', 'London, UK', 'VISA ⠀•••• 2574', 866.99),
-  createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-  createData(3, '16 Mar, 2019', 'Michael Jackson', 'Gary, IN', 'AMEX ⠀•••• 2000', 654.39),
-  createData(4, '15 Mar, 2019', 'Bruce Springsteen', 'Long Branch, NJ', 'VISA ⠀•••• 5919', 212.79),
+const TEMPERATURE_PROFILE_COLUMNS = [
+  {
+    title: '_id',
+    field: '_id',
+    hidden: true,
+  },
+  {
+    title: 'Date',
+    field: 'creationTimestamp',
+    render: p =>
+      dayjs(p.creationTimestamp)
+        .local()
+        .locale('en')
+        .format('hh:mm:ss')
+        .toString(),
+  },
+  {
+    title: 'Is valid?',
+    field: 'isValid',
+    render: p => {
+      const valid = p.points.some(point => point < p.min || point > p.max);
+      return valid ? 'Valid' : 'Invalid';
+    }
+  },
 ];
 
-function preventDefault(event) {
-  event.preventDefault();
-}
+const TEMPERATURE_POINT_COLUMNS = [
+  {
+    title: '_id',
+    field: '_id',
+    hidden: true,
+  },
+  {
+    title: 'x',
+    field: 'x',
+  },
+  {
+    title: 'y',
+    field: 'y',
+  },
+  {
+    title: 'z',
+    field: 'z',
+  },
+  {
+    title: 'Temperature',
+    field: 'temperatureValue',
+    render: (tp) => tp.temperatureValue + ' °C'
+  },
+];
 
 const useStyles = makeStyles((theme) => ({
-  seeMore: {
-    marginTop: theme.spacing(3),
+  profiles: {
+    padding: theme.spacing(2),
   },
 }));
 
@@ -105,6 +141,29 @@ export default function Transportations({ authToken }) {
         title="Recent Transportations"
         columns={TRANSPORTATION_COLUMNS}
         data={transportationData}
+        detailPanel={(t) => {
+          return (
+            <Grid item className={classes.profiles}>
+              <MaterialTable
+                title="Temperature Profiles"
+                columns={TEMPERATURE_PROFILE_COLUMNS}
+                data={t.temperatureMaps.map(tmap => { tmap.min = t.minimalAllowedTemperature; return tmap; })
+                                       .map(tmap => { tmap.max = t.maximalAllowedTemperature; return tmap; })}
+                detailPanel={(tmap => {
+                  return (
+                    <Grid item className={classes.profiles}>
+                      <MaterialTable 
+                        title="Temperature Points"
+                        columns={TEMPERATURE_POINT_COLUMNS}
+                        data={tmap.points}
+                      />
+                    </Grid>
+                  );
+                })}
+              />
+            </Grid>
+          );
+        }}
       />
     </React.Fragment>
   );
