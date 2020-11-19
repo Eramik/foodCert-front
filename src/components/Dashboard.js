@@ -17,7 +17,7 @@ import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import { mainListItems, secondaryListItems } from './listItems';
+import { MainListItems, SecondaryListItems } from './listItems';
 import Transportations from './Transportations';
 import Users from './Users';
 import { useCookies } from 'react-cookie';
@@ -26,6 +26,7 @@ import {
   Route,
   useLocation
 } from "react-router-dom";
+import cfg from '../config/config';
 
 
 function Copyright() {
@@ -127,6 +128,9 @@ const useStyles = makeStyles((theme) => ({
   },
   userFullName: {
     paddingRight: theme.spacing(2)
+  },
+  uaButton: {
+    marginRight: theme.spacing(3)
   }
 }));
 
@@ -137,7 +141,8 @@ export default function Dashboard() {
   const location = useLocation();
 
   const [open, setOpen] = React.useState(true);
-  const [cookies, setCookie, removeCookie] = useCookies(['auth_token']);
+  const [cookies, setCookie, removeCookie] = useCookies();
+  const langPack = cfg[cookies.lang ? cookies.lang : 'en'];
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -152,7 +157,13 @@ export default function Dashboard() {
     removeCookie('auth_token');
   }
 
-  const fixedHeightPaper = clsx(classes.paper, classes.fixedHeight);
+  const handleEn = () => {
+    setCookie('lang', 'en');
+  }
+
+  const handleUa = () => {
+    setCookie('lang', 'ua');
+  }
 
   return (
     <div className={classes.root}>
@@ -169,13 +180,19 @@ export default function Dashboard() {
             <MenuIcon />
           </IconButton>
           <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
-            Dashboard
+            {langPack.Dashboard}
           </Typography>
+          <Button color="inherit" size="large" onClick={handleEn} disabled={cookies.lang === 'en' || !cookies.lang}>
+            EN
+          </Button>
+          <Button color="inherit" size="large" onClick={handleUa} className={classes.uaButton} disabled={cookies.lang === 'ua'}>
+            UA
+          </Button>
           <Typography noWrap color="inherit" className={classes.userFullName}>
             {cookies.user && cookies.user.firstName + " " + cookies.user.lastName}
           </Typography>
           <Button color="inherit" onClick={logOut} variant="outlined" >
-            Log out
+            {langPack.logout}
           </Button>
         </Toolbar>
       </AppBar>
@@ -192,11 +209,11 @@ export default function Dashboard() {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
+        <List><MainListItems/></List>
         {cookies.user.isAdmin && 
           <>
             <Divider />
-            <List>{secondaryListItems}</List>
+            <List><SecondaryListItems/></List>
           </>
         }
       </Drawer>

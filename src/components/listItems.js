@@ -10,33 +10,45 @@ import BarChartIcon from '@material-ui/icons/BarChart';
 import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link } from 'react-router-dom';
+import cfg from '../config/config'
+import { useCookies } from 'react-cookie';
 
 
-export const mainListItems = (
-  <div>
-    <ListItem button to={'/dashboard'} component={Link}>
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary="My Transportations" />
-    </ListItem>
-  </div>
-);
+export const MainListItems = () => {
+  const [cookies] = useCookies();
+  const langPack = cfg[cookies.lang ? cookies.lang : 'en'];
 
-export const secondaryListItems = (
-  <div>
-    <ListSubheader inset>Admin panel</ListSubheader>
-    <ListItem button to={'/dashboard/admin/all'} component={Link}>
-      <ListItemIcon>
-        <BarChartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Transportations" />
-    </ListItem>
-    <ListItem button to={'/dashboard/admin/users'} component={Link}>
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Users" />
-    </ListItem>
-  </div>
-);
+  return (
+    <div>
+      <ListItem button to={'/dashboard'} component={Link}>
+        <ListItemIcon>
+          <BarChartIcon />
+        </ListItemIcon>
+        <ListItemText primary={langPack.myTranspTitle} />
+      </ListItem>
+    </div>
+  );
+};
+
+export const SecondaryListItems = () => {
+  const [cookies] = useCookies();
+  const langPack = cfg[cookies.lang ? cookies.lang : 'en'];
+  
+  return (
+    <div>
+      <ListSubheader inset>{langPack.adminPanelTitle}</ListSubheader>
+      <ListItem button to={'/dashboard/admin/all'} component={Link}>
+        <ListItemIcon>
+          <BarChartIcon />
+        </ListItemIcon>
+        <ListItemText primary={langPack.transps} />
+      </ListItem>
+      <ListItem button to={'/dashboard/admin/users'} component={Link}>
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary={langPack.users} />
+      </ListItem>
+    </div>
+  );
+};
