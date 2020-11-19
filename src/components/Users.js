@@ -9,6 +9,7 @@ import utc from 'dayjs/plugin/utc';
 import cfg from '../config/config'
 import { useCookies } from 'react-cookie';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import { CsvBuilder } from 'filefy';
 dayjs.extend(localizedFormat)
 dayjs.extend(utc);
 
@@ -96,6 +97,58 @@ export default function Transportations({ authToken }) {
     }
   });
 
+  const byString = (o, s) => {
+    if (!s) {
+      return;
+    }
+
+    s = s.replace(/\[(\w+)\]/g, '.$1');
+    s = s.replace(/^\./, '');
+    const a = s.split('.');
+    for (let i = 0, n = a.length; i < n; ++i) {
+      const x = a[i];
+      if (o && x in o) {
+        o = o[x];
+      } else {
+        return;
+      }
+    }
+    return o;
+  };
+
+  const exportCsv = (columns, dataToExport) => {
+    const data = dataToExport.map(rowData => columns.map(columnDef => getFieldValue(rowData, columnDef)));
+    const builder = new CsvBuilder(getExportFileName() + '.csv');
+    builder
+      .setDelimeter(',')
+      .setColumns(columns.map(columnDef => columnDef.title))
+      .addRows(data)
+      .exportFile();
+  };
+
+  const getFieldValue = (rowData, columnDef, lookup = true) => {
+    let value =
+      typeof rowData[columnDef.field] !== 'undefined'
+        ? rowData[columnDef.field]
+        : byString(rowData, columnDef.field);
+    if (columnDef.lookup && lookup) {
+      value = columnDef.lookup[value];
+    }
+    if (Array.isArray(value)) {
+      value = value.join(',');
+    }
+    return value;
+  };
+
+  const getExportFileName = () => {
+    return (
+      new Date().toLocaleDateString('en', {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+      }) + ` - Users Export`
+    );
+  };
   
   return (
     <React.Fragment>
@@ -107,6 +160,10 @@ export default function Transportations({ authToken }) {
         options={{
           sorting: true,
           pageSize: 10,
+          exportButton: true,
+          exportFileName: getExportFileName(),
+          exportAllData: true,
+          exportCsv: exportCsv,
         }}
       />
     </React.Fragment>
