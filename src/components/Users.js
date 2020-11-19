@@ -6,7 +6,8 @@ import { useState, useEffect } from 'react';
 import { getAllUsers, toggleAdmin } from '../services/data';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import config from '../config/config';
+import cfg from '../config/config'
+import { useCookies } from 'react-cookie';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
 dayjs.extend(localizedFormat)
 dayjs.extend(utc);
@@ -26,6 +27,8 @@ export default function Transportations({ authToken }) {
   const [userData, setUserData] = useState([]);
   const [loadingUserData, setLoadingUserData] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
+  const [cookies] = useCookies();
+  const langPack = cfg[cookies.lang ? cookies.lang : 'en'];
 
   const handleToggleAdmin = async (userId, isAdmin) => {
     setLoadingUserData(true);
@@ -36,30 +39,29 @@ export default function Transportations({ authToken }) {
 
   const USER_COLUMNS = [
     {
-      title: 'Sign up date',
+      title: langPack.signUpDate,
       field: 'createdAt',
       render: p =>
         dayjs(p.updatedAt)
           .local()
-          .locale('en')
           .format('lll'),
     },
     {
-      title: 'Email',
+      title: langPack.email,
       field: 'email',
     },
     {
-      title: 'First name',
+      title: langPack.firstName,
       field: 'firstName',
     },
     {
-      title: 'Last name',
+      title: langPack.lastName,
       field: 'lastName',
     },
     {
-      title: 'Is admin?',
+      title: langPack.isAdmin,
       field: 'isAdmin',
-      render: (u) => u.isAdmin ? "Admin" : 'Not admin'
+      render: (u) => u.isAdmin ? langPack.admin : langPack.notAdmin
     },
     {
       title: '',
@@ -67,7 +69,7 @@ export default function Transportations({ authToken }) {
       render: (u) => {
         return (
           <Button variant='outlined' color="primary" onClick={() => handleToggleAdmin(u._id, u.isAdmin)}>
-            Toggle admin
+            {langPack.toggleAdmin}
           </Button>
         );
       }
