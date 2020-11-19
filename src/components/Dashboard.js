@@ -21,12 +21,14 @@ import { MainListItems, SecondaryListItems } from './listItems';
 import Transportations from './Transportations';
 import Users from './Users';
 import { useCookies } from 'react-cookie';
+import locale_uk from 'dayjs/locale/uk';
 import {
   Switch,
   Route,
   useLocation
 } from "react-router-dom";
 import cfg from '../config/config';
+import dayjs from 'dayjs';
 
 
 function Copyright() {
@@ -158,10 +160,12 @@ export default function Dashboard() {
   }
 
   const handleEn = () => {
+    dayjs.locale('en');
     setCookie('lang', 'en');
   }
 
   const handleUa = () => {
+    dayjs.locale(locale_uk);
     setCookie('lang', 'ua');
   }
 

@@ -8,59 +8,10 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import config from '../config/config';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
+import cfg from '../config/config'
+import { useCookies } from 'react-cookie';
 dayjs.extend(localizedFormat)
 dayjs.extend(utc);
-
-const TEMPERATURE_PROFILE_COLUMNS = [
-  {
-    title: '_id',
-    field: '_id',
-    hidden: true,
-  },
-  {
-    title: 'Date',
-    field: 'creationTimestamp',
-    render: p =>
-      dayjs(p.creationTimestamp)
-        .local()
-        .locale('en')
-        .format('hh:mm:ss')
-        .toString(),
-  },
-  {
-    title: 'Is valid?',
-    field: 'isValid',
-    render: p => {
-      const valid = p.points.some(point => point < p.min || point > p.max);
-      return valid ? 'Valid' : 'Invalid';
-    }
-  },
-];
-
-const TEMPERATURE_POINT_COLUMNS = [
-  {
-    title: '_id',
-    field: '_id',
-    hidden: true,
-  },
-  {
-    title: 'x',
-    field: 'x',
-  },
-  {
-    title: 'y',
-    field: 'y',
-  },
-  {
-    title: 'z',
-    field: 'z',
-  },
-  {
-    title: 'Temperature',
-    field: 'temperatureValue',
-    render: (tp) => tp.temperatureValue + ' °C'
-  },
-];
 
 const useStyles = makeStyles((theme) => ({
   profiles: {
@@ -71,11 +22,74 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
+
+
 export default function Transportations({ authToken, allMode = false }) {
   const classes = useStyles();
+  const [cookies] = useCookies();
+  const langPack = cfg[cookies.lang ? cookies.lang : 'en'];
+
+  const getTemp = (t) => {
+    if (cookies.lang === 'en' || !cookies.lang) {
+      return t * 9/5 + 32 + '°F';
+    } else {
+      return t + '°C';
+    }
+  }
+
+  const TEMPERATURE_POINT_COLUMNS = [
+    {
+      title: '_id',
+      field: '_id',
+      hidden: true,
+    },
+    {
+      title: 'x',
+      field: 'x',
+    },
+    {
+      title: 'y',
+      field: 'y',
+    },
+    {
+      title: 'z',
+      field: 'z',
+    },
+    {
+      title: langPack.temp,
+      field: 'temperatureValue',
+      render: (tp) => getTemp(tp.temperatureValue)
+    },
+  ];
+
+  const TEMPERATURE_PROFILE_COLUMNS = [
+    {
+      title: '_id',
+      field: '_id',
+      hidden: true,
+    },
+    {
+      title: langPack.date,
+      field: 'creationTimestamp',
+      render: p =>
+        dayjs(p.creationTimestamp)
+          .local()
+          .format('hh:mm:ss')
+          .toString(),
+    },
+    {
+      title: langPack.isValid,
+      field: 'isValid',
+      render: p => {
+        const valid = p.points.some(point => point < p.min || point > p.max);
+        return valid ? langPack.valid : langPack.invalid;
+      }
+    },
+  ];
+
   const TRANSPORTATION_COLUMNS = [
     allMode ? {
-      title: 'Tranporter email',
+      title: langPack.transpEmail,
       field: 'transporterId.email',
     } : {
       title: '_id',
@@ -84,30 +98,29 @@ export default function Transportations({ authToken, allMode = false }) {
     }
     ,
     {
-      title: 'Date',
+      title: langPack.date,
       field: 'transportationEndTime',
       render: p =>
         dayjs(p.updatedAt)
           .local()
-          .locale('en')
           .format('lll'),
     },
     {
-      title: 'Min temp set',
+      title: langPack.minTempSet,
       field: 'minimalAllowedTemperature',
-      render: (tp) => tp.minimalAllowedTemperature + '°C'
+      render: (tp) => getTemp(tp.minimalAllowedTemperature)
     },
     {
-      title: 'Max temp set',
+      title: langPack.maxTempSet,
       field: 'maximalAllowedTemperature',
-      render: (tp) => tp.maximalAllowedTemperature + '°C'
+      render: (tp) => getTemp(tp.maximalAllowedTemperature)
     },
     {
-      title: 'Certificate status',
+      title: langPack.certStatus,
       field: 'certificatePath',
       render: p => {
         if (p.score < 0) {
-          return 'Not certified';
+          return langPack.notCertified;
         }
         if (!p.certificatePath) {
           return;
@@ -117,14 +130,14 @@ export default function Transportations({ authToken, allMode = false }) {
         return (
           <a href={href} target="_blank">
             <Button variant="outlined" color="primary" style={{ textDecoration: 'none' }}>
-              Open certificate
+              {langPack.openCert}
             </Button>
           </a>
         );
       }
     },
     {
-      title: 'Score',
+      title: langPack.score,
       field: 'score',
     },
   ];
@@ -166,10 +179,10 @@ export default function Transportations({ authToken, allMode = false }) {
         title={
           <>
             <Typography variant="h5">
-              {allMode ? "Tranportations" : "My Transportations"}
+              {allMode ? langPack.transps : langPack.myTranspTitle}
               {!allMode && 
                 <Button variant="outlined" color="primary" onClick={handleGenerate} className={classes.generateButton}>
-                  Generate one more sample
+                  {langPack.genSample}
                 </Button>}
             </Typography>
           </>
@@ -184,7 +197,7 @@ export default function Transportations({ authToken, allMode = false }) {
           return (
             <Grid item className={classes.profiles}>
               <MaterialTable
-                title="Temperature Profiles"
+                title={langPack.tempProfiles}
                 options={{
                   sorting: true,
                 }}
@@ -195,7 +208,7 @@ export default function Transportations({ authToken, allMode = false }) {
                   return (
                     <Grid item className={classes.profiles}>
                       <MaterialTable 
-                        title="Temperature Points"
+                        title={langPack.tempPoints}
                         options={{
                           sorting: true,
                           pageSize: 10,
