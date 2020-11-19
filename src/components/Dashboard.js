@@ -25,7 +25,8 @@ import locale_uk from 'dayjs/locale/uk';
 import {
   Switch,
   Route,
-  useLocation
+  useLocation,
+  Redirect
 } from "react-router-dom";
 import cfg from '../config/config';
 import dayjs from 'dayjs';
@@ -167,6 +168,10 @@ export default function Dashboard() {
   const handleUa = () => {
     dayjs.locale(locale_uk);
     setCookie('lang', 'ua');
+  }
+
+  if (!cookies.auth_token) {
+    return <Redirect to="/signIn" />
   }
 
   return (

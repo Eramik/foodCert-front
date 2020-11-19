@@ -13,7 +13,7 @@ import locale_uk from 'dayjs/locale/uk';
 import dayjs from 'dayjs';
 
 export default function App() {
-  const [cookies] = useCookies(['auth_token']);
+  const [cookies] = useCookies();
 
   if (cookies.lang === 'ua') {
     dayjs.locale(locale_uk);
@@ -34,10 +34,7 @@ export default function App() {
             <SignUp />
           </Route>
           <Route path="/dashboard">
-            {cookies.auth_token ? 
-              <Dashboard />
-              : <Redirect to="/signIn" />
-            }
+            <Dashboard />
           </Route>
         </Switch>
       </div>
