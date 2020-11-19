@@ -18,3 +18,21 @@ export const generateTransportation = async (token) => {
   console.log("Data: ", res.data);
   return res.data;
 };
+
+export const getAllTransportations = async (token) => {
+  const res = await axios.get(config.serverBaseURL + '/getAllTransportations?authToken=' + token);
+  console.log("Data: ", res.data);
+  return res.data;
+};
+
+export const getAllUsers = async (token) => {
+  const res = await axios.get(config.serverBaseURL + '/getAllUsers?authToken=' + token);
+  console.log("Data: ", res.data);
+  return res.data;
+};
+
+export const toggleAdmin = async (token, userId, isAdmin) => {
+  const res = await axios.get(config.serverBaseURL + '/toggleAdmin?authToken=' + token + '&userId=' + userId + '&isAdmin=' + isAdmin);
+  console.log("Data: ", res.data);
+  return res.data;
+};

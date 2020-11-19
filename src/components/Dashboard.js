@@ -19,7 +19,13 @@ import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems, secondaryListItems } from './listItems';
 import Transportations from './Transportations';
+import Users from './Users';
 import { useCookies } from 'react-cookie';
+import {
+  Switch,
+  Route,
+  useLocation
+} from "react-router-dom";
 
 
 function Copyright() {
@@ -126,6 +132,10 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Dashboard() {
   const classes = useStyles();
+
+  // Hook for rerendering when tab changed.
+  const location = useLocation();
+
   const [open, setOpen] = React.useState(true);
   const [cookies, setCookie, removeCookie] = useCookies(['auth_token']);
 
@@ -197,7 +207,17 @@ export default function Dashboard() {
             {/* Recent Orders */}
             <Grid item xs={12}>
               <Grid item className={classes.transportationsWrapper}>
-                <Transportations authToken={cookies.auth_token}/>
+                <Switch>
+                  <Route exact path="/dashboard">
+                    <Transportations authToken={cookies.auth_token} key={'myTransportations'}/>
+                  </Route>
+                  <Route path="/dashboard/admin/all">
+                    <Transportations authToken={cookies.auth_token} allMode key={'allTransportations'}/>
+                  </Route>
+                  <Route path="/dashboard/admin/users">
+                    <Users authToken={cookies.auth_token} key={'userssssall'}/>
+                  </Route>
+                </Switch>
               </Grid>
             </Grid>
           </Grid>

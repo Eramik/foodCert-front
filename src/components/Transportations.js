@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { LinearProgress, Grid, Button, Typography } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import { useState, useEffect } from 'react';
-import { getAllTransportationsForUser, generateTransportation } from '../services/data';
+import { getAllTransportationsForUser, generateTransportation, getAllTransportations } from '../services/data';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import config from '../config/config';
@@ -71,14 +71,18 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Transportations({ authToken }) {
+export default function Transportations({ authToken, allMode = false }) {
   const classes = useStyles();
   const TRANSPORTATION_COLUMNS = [
-    {
+    allMode ? {
+      title: 'Tranporter email',
+      field: 'transporterId.email',
+    } : {
       title: '_id',
       field: '_id',
       hidden: true,
-    },
+    }
+    ,
     {
       title: 'Date',
       field: 'transportationEndTime',
@@ -133,7 +137,7 @@ export default function Transportations({ authToken }) {
       if (setLoading) {
         setLoadingTransportationData(true);
       }
-      const { transportations } = await getAllTransportationsForUser(authToken);
+      const { transportations } = await (allMode ? getAllTransportations(authToken) : getAllTransportationsForUser(authToken));
       setTransportationData(transportations);
       setDataLoaded(true);
       setLoadingTransportationData(false);
@@ -155,7 +159,6 @@ export default function Transportations({ authToken }) {
     setLoadingTransportationData(false);
   }
   
-
   return (
     <React.Fragment>
       {loadingTransportationData && <LinearProgress />}
@@ -163,10 +166,11 @@ export default function Transportations({ authToken }) {
         title={
           <>
             <Typography variant="h5">
-              {"Recent Transportations"}
-              <Button variant="outlined" color="primary" onClick={handleGenerate} className={classes.generateButton}>
-                Generate one more sample
-              </Button>
+              {allMode ? "Tranportations" : "My Transportations"}
+              {!allMode && 
+                <Button variant="outlined" color="primary" onClick={handleGenerate} className={classes.generateButton}>
+                  Generate one more sample
+                </Button>}
             </Typography>
           </>
         }
