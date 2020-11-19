@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { LinearProgress, Grid, Button, Typography } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import { useState, useEffect } from 'react';
-import { getAllUsers, toggleAdmin } from '../services/data';
+import { getAllUsers, toggleAdmin, deleteUser } from '../services/data';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import cfg from '../config/config'
@@ -149,6 +149,13 @@ export default function Transportations({ authToken }) {
       }) + ` - Users Export`
     );
   };
+
+  const handleDeleteUser = async (user) => {
+    setLoadingUserData(true);
+    const { users } = await deleteUser(authToken, user._id);
+    setUserData(users);
+    setLoadingUserData(false);
+  }
   
   return (
     <React.Fragment>
@@ -165,6 +172,12 @@ export default function Transportations({ authToken }) {
           exportAllData: true,
           exportCsv: exportCsv,
         }}
+        actions={[
+          {
+            icon: 'delete',
+            onClick: (event, rowData) => handleDeleteUser(rowData)
+          }
+        ]}
       />
     </React.Fragment>
   );

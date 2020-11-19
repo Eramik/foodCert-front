@@ -155,8 +155,8 @@ export default function Dashboard() {
   };
 
   const logOut = () => {
-    removeCookie('user');
     removeCookie('auth_token');
+    removeCookie('user');
   }
 
   const handleEn = () => {

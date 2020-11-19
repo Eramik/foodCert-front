@@ -3,7 +3,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { LinearProgress, Grid, Button, Typography } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import { useState, useEffect } from 'react';
-import { getAllTransportationsForUser, generateTransportation, getAllTransportations } from '../services/data';
+import { getAllTransportationsForUser, generateTransportation, getAllTransportations, deleteTransport } from '../services/data';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import config from '../config/config';
@@ -225,6 +225,13 @@ export default function Transportations({ authToken, allMode = false }) {
       }) + ` - Transports Export`
     );
   };
+
+  const handleDeleteTransport = async (transport) => {
+    setLoadingTransportationData(true);
+    const { transportations } = await deleteTransport(authToken, transport._id);
+    setTransportationData(transportations);
+    setLoadingTransportationData(false);
+  }
   
   return (
     <React.Fragment>
@@ -243,6 +250,22 @@ export default function Transportations({ authToken, allMode = false }) {
         }
         columns={TRANSPORTATION_COLUMNS}
         data={transportationData}
+        localization={{
+          pagination: {
+            labelDisplayedRows: langPack.labelDisplayedRows,
+            labelRowsSelect: langPack.labelRowsSelect
+          },
+          toolbar: {
+            nRowsSelected: langPack.nRowsSelected,
+            searchPlaceholder: langPack.searchPlaceholder
+          },
+          header: {
+            actions: langPack.actions
+          },
+          body: {
+            emptyDataSourceMessage: langPack.emptyDataSourceMessage,
+          }
+      }}
         options={{
           sorting: true,
           pageSize: 10,
@@ -251,6 +274,12 @@ export default function Transportations({ authToken, allMode = false }) {
           exportAllData: true,
           exportCsv: exportCsv,
         }}
+        actions={allMode ? [
+          {
+            icon: 'delete',
+            onClick: (event, rowData) => handleDeleteTransport(rowData)
+          }
+        ] : undefined}
         detailPanel={(t) => {
           return (
             <Grid item className={classes.profiles}>

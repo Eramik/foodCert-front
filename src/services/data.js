@@ -36,3 +36,15 @@ export const toggleAdmin = async (token, userId, isAdmin) => {
   console.log("Data: ", res.data);
   return res.data;
 };
+
+export const deleteUser = async (token, userId) => {
+  const res = await axios.get(`${config.serverBaseURL}/deleteUser/${userId}?authToken=${token}`);
+  console.log("Data: ", res.data);
+  return res.data;
+};
+
+export const deleteTransport = async (token, transportId) => {
+  const res = await axios.get(`${config.serverBaseURL}/deleteTransport/${transportId}?authToken=${token}`);
+  console.log("Data: ", res.data);
+  return res.data;
+};
