@@ -1,54 +1,13 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import { LinearProgress, Grid } from '@material-ui/core';
+import { LinearProgress, Grid, Button } from '@material-ui/core';
 import MaterialTable from 'material-table';
 import { useState, useEffect } from 'react';
 import { getAllTransportationsForUser } from '../services/data';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import config from '../config/config';
 dayjs.extend(utc);
-
-const TRANSPORTATION_COLUMNS = [
-  {
-    title: '_id',
-    field: '_id',
-    hidden: true,
-  },
-  {
-    title: 'Date',
-    field: 'transportationEndTime',
-    render: p =>
-      dayjs(p.updatedAt)
-        .local()
-        .locale('en')
-        .toString(),
-  },
-  {
-    title: 'Min temp',
-    field: 'minimalAllowedTemperature',
-  },
-  {
-    title: 'Max temp',
-    field: 'maximalAllowedTemperature',
-  },
-  {
-    title: 'Certificate status',
-    field: 'certificatePath',
-    render: p => {
-      if (p.score < 0) {
-        return 'Not certified';
-      }
-      if (!p.certificatePath) {
-        return 'Certified';
-      }
-      return p.certificatePath;
-    }
-  },
-  {
-    title: 'Score',
-    field: 'score',
-  },
-];
 
 const TEMPERATURE_PROFILE_COLUMNS = [
   {
@@ -104,11 +63,60 @@ const TEMPERATURE_POINT_COLUMNS = [
 const useStyles = makeStyles((theme) => ({
   profiles: {
     padding: theme.spacing(2),
-  },
+  }
 }));
 
 export default function Transportations({ authToken }) {
   const classes = useStyles();
+  const TRANSPORTATION_COLUMNS = [
+    {
+      title: '_id',
+      field: '_id',
+      hidden: true,
+    },
+    {
+      title: 'Date',
+      field: 'transportationEndTime',
+      render: p =>
+        dayjs(p.updatedAt)
+          .local()
+          .locale('en')
+          .toString(),
+    },
+    {
+      title: 'Min temp',
+      field: 'minimalAllowedTemperature',
+    },
+    {
+      title: 'Max temp',
+      field: 'maximalAllowedTemperature',
+    },
+    {
+      title: 'Certificate status',
+      field: 'certificatePath',
+      render: p => {
+        if (p.score < 0) {
+          return 'Not certified';
+        }
+        if (!p.certificatePath) {
+          return;
+        }
+
+        const href = `${config.serverBaseURL}/certificate/${p._id.toString()}?authToken=${authToken}`;
+        return (
+          <a href={href} target="_blank">
+            <Button variant="outlined" color="primary" style={{ textDecoration: 'none' }}>
+              Open certificate
+            </Button>
+          </a>
+        );
+      }
+    },
+    {
+      title: 'Score',
+      field: 'score',
+    },
+  ];
   const [transportationData, setTransportationData] = useState([]);
   const [loadingTransportationData, setLoadingTransportationData] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
@@ -141,11 +149,17 @@ export default function Transportations({ authToken }) {
         title="Recent Transportations"
         columns={TRANSPORTATION_COLUMNS}
         data={transportationData}
+        options={{
+          sorting: true
+        }}
         detailPanel={(t) => {
           return (
             <Grid item className={classes.profiles}>
               <MaterialTable
                 title="Temperature Profiles"
+                options={{
+                  sorting: true
+                }}
                 columns={TEMPERATURE_PROFILE_COLUMNS}
                 data={t.temperatureMaps.map(tmap => { tmap.min = t.minimalAllowedTemperature; return tmap; })
                                        .map(tmap => { tmap.max = t.maximalAllowedTemperature; return tmap; })}
@@ -154,6 +168,9 @@ export default function Transportations({ authToken }) {
                     <Grid item className={classes.profiles}>
                       <MaterialTable 
                         title="Temperature Points"
+                        options={{
+                          sorting: true
+                        }}
                         columns={TEMPERATURE_POINT_COLUMNS}
                         data={tmap.points}
                       />
