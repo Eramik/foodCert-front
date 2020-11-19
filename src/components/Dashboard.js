@@ -20,7 +20,7 @@ import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import { mainListItems, secondaryListItems } from './listItems';
 import Chart from './Chart';
 import Deposits from './Deposits';
-import Orders from './Orders';
+import Transportations from './Transportations';
 import { useCookies } from 'react-cookie';
 
 
@@ -113,6 +113,11 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'auto',
     flexDirection: 'column',
   },
+  transportationsWrapper: {
+    display: 'flex',
+    overflow: 'auto',
+    flexDirection: 'column',
+  },
   fixedHeight: {
     height: 240,
   },
@@ -187,23 +192,11 @@ export default function Dashboard() {
         <div className={classes.appBarSpacer} />
         <Container maxWidth="lg" className={classes.container}>
           <Grid container spacing={3}>
-            {/* Chart */}
-            <Grid item xs={12} md={8} lg={9}>
-              <Paper className={fixedHeightPaper}>
-                <Chart />
-              </Paper>
-            </Grid>
-            {/* Recent Deposits */}
-            <Grid item xs={12} md={4} lg={3}>
-              <Paper className={fixedHeightPaper}>
-                <Deposits />
-              </Paper>
-            </Grid>
             {/* Recent Orders */}
             <Grid item xs={12}>
-              <Paper className={classes.paper}>
-                <Orders />
-              </Paper>
+              <Grid item className={classes.transportationsWrapper}>
+                <Transportations authToken={cookies.auth_token}/>
+              </Grid>
             </Grid>
           </Grid>
           <Box pt={4}>

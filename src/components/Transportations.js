@@ -1,12 +1,10 @@
 import React from 'react';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Title from './Title';
+import { LinearProgress } from '@material-ui/core';
+import MaterialTable from 'material-table';
+import { useState, useEffect } from 'react';
+import { getAllTransportationsForUser } from '../services/data';
+import dayjs from 'dayjs';
 
 const TRANSPORTATION_COLUMNS = [
   {
@@ -15,54 +13,37 @@ const TRANSPORTATION_COLUMNS = [
     hidden: true,
   },
   {
-    title: 'ownerId',
-    field: 'owner._id',
-    hidden: true,
-  },
-  {
-    title: 'Ask owner',
-    field: 'askOwner.profile.name',
-  },
-  {
-    title: 'Ask body',
-    field: 'ask.body',
-  },
-  {
-    title: 'Ask tags',
-    field: 'tags',
-    render: p => (p.ask.tags ? p.ask.tags.join(', ') : ''),
-  },
-  {
-    title: 'Offer owner',
-    field: 'offerOwner.profile.name',
-  },
-  {
-    title: 'Offer body',
-    field: 'offer.body',
-  },
-  {
-    title: 'Offer tags',
-    field: 'tags',
-    render: p => (p.offer.tags ? p.offer.tags.join(', ') : ''),
-  },
-  {
-    title: 'Status',
-    field: 'approved',
-    render: p => p.approved ? 'Approved' : 'Denied'
-  },
-  {
-    title: 'Moderated by',
-    field: 'moderatedBy',
-    render: p => p.moderatedBy && (p.moderatedBy.user ? p.moderatedBy.user.profile.name : 
-                  p.moderatedBy.slackUser && p.moderatedBy.slackUser.name + ' (from Slack)')
-  },
-  {
     title: 'Date',
-    field: 'updatedAt',
+    field: 'createdAt',
     render: p =>
       dayjs(p.updatedAt)
         .locale('en')
-        .format('YYYY-MM-DD'),
+        .toString(),
+  },
+  {
+    title: 'Min temp',
+    field: 'minimalAllowedTemperature',
+  },
+  {
+    title: 'Max temp',
+    field: 'maximalAllowedTemperature',
+  },
+  {
+    title: 'Certificate status',
+    field: 'certificatePath',
+    render: p => {
+      if (p.score < 0) {
+        return 'Not certified';
+      }
+      if (!p.certificatePath) {
+        return 'Certified';
+      }
+      return p.certificatePath;
+    }
+  },
+  {
+    title: 'Score',
+    field: 'score',
   },
 ];
 
@@ -90,40 +71,41 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default function Orders() {
+export default function Transportations({ authToken }) {
   const classes = useStyles();
+  const [transportationData, setTransportationData] = useState([]);
+  const [loadingTransportationData, setLoadingTransportationData] = useState(true);
+  const [dataLoaded, setDataLoaded] = useState(false);
+
+  const loadTransportationData = async (setLoading = false) => {
+    try {
+      if (setLoading) {
+        setLoadingTransportationData(true);
+      }
+      const { transportations } = await getAllTransportationsForUser(authToken);
+      setTransportationData(transportations);
+      setDataLoaded(true);
+      setLoadingTransportationData(false);
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  useEffect(() => {
+    if (!dataLoaded) {
+      loadTransportationData();
+    }
+  });
   
 
   return (
     <React.Fragment>
-      <Title>Recent Transportations</Title>
-      <Table size="small">
-        <TableHead>
-          <TableRow>
-            <TableCell>Date</TableCell>
-            <TableCell>Name</TableCell>
-            <TableCell>Ship To</TableCell>
-            <TableCell>Payment Method</TableCell>
-            <TableCell align="right">Score</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {rows.map((row) => (
-            <TableRow key={row.id}>
-              <TableCell>{row.date}</TableCell>
-              <TableCell>{row.name}</TableCell>
-              <TableCell>{row.shipTo}</TableCell>
-              <TableCell>{row.paymentMethod}</TableCell>
-              <TableCell align="right">{row.amount}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-      <div className={classes.seeMore}>
-        <Link color="primary" href="#" onClick={preventDefault}>
-          See more orders
-        </Link>
-      </div>
+      {loadingTransportationData && <LinearProgress />}
+      <MaterialTable 
+        title="Recent Transportations"
+        columns={TRANSPORTATION_COLUMNS}
+        data={transportationData}
+      />
     </React.Fragment>
   );
 }
