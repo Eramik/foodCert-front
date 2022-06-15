@@ -22,7 +22,8 @@
     "react-dom": "latest",
     "react-router-dom": "^5.2.0",
     "react-scripts": "latest",
-    "recharts": "^1.8.5"
+    "recharts": "^1.8.5",
+    "use-file-picker": "^1.4.2"
   },
   "browserslist": {
     "production": [

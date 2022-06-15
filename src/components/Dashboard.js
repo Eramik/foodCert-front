@@ -30,6 +30,7 @@ import {
 } from "react-router-dom";
 import cfg from '../config/config';
 import dayjs from 'dayjs';
+import Backup from './Backup';
 
 
 function Copyright() {
@@ -242,6 +243,9 @@ export default function Dashboard() {
                   </Route>
                   <Route path="/dashboard/admin/users">
                     <Users authToken={cookies.auth_token} key={'userssssall'}/>
+                  </Route>
+                  <Route path="/dashboard/admin/backup">
+                    <Backup authToken={cookies.auth_token} key={'adminbackup'}/>
                   </Route>
                 </Switch>
               </Grid>

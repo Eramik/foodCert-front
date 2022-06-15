@@ -36,6 +36,10 @@ export default {
     emptyDataSourceMessage: 'No records to display',
     labelRowsSelect: "rows",
     searchPlaceholder: "Search",
+    backup: "Backup",
+    download: "Download",
+    upload: "Upload",
+    dataBackups: "Data Backup"
   }, 
   ua: {
     Dashboard: "Панель управління",
@@ -73,5 +77,9 @@ export default {
     emptyDataSourceMessage: 'Немає даних',
     labelRowsSelect: "рядків",
     searchPlaceholder: "Пошук",
+    backup: "Резервне копіювання",
+    download: "Завантажити",
+    upload: "Відправити",
+    dataBackups: "Резервне копіювання даних",
   },
 };
